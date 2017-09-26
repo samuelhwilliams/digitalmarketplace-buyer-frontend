@@ -43,6 +43,8 @@ $path: "/static/images/";
 @import "toolkit/shared_placeholders/_mixins.scss";
 
 // Digital Marketplace Front-end toolkit styles
+@import "toolkit/site.scss";
+
 @import "toolkit/_breadcrumb.scss";
 @import "toolkit/_browse-list.scss";
 @import "toolkit/_buttons.scss";
@@ -59,7 +61,6 @@ $path: "/static/images/";
 @import "toolkit/_service-id.scss";
 @import "toolkit/_statistics.scss";
 @import "toolkit/_temporary-message.scss";
-@import "toolkit/_report-a-problem.scss";
 @import "toolkit/forms/_dates.scss";
 @import "toolkit/forms/_hint.scss";
 @import "toolkit/forms/_keyword-search.scss";
