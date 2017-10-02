@@ -6,8 +6,8 @@ def is_direct_award_project_accessible(project, user_id):
     return any([user['id'] == user_id for user in project['users']])
 
 
-def get_direct_award_projects(user_id, return_type="all", sort_by_key=None):
-    projects = data_api_client.find_direct_award_projects(user_id).get('projects', [])
+def get_direct_award_projects(user_id, return_type="all", sort_by_key=None, latest_first=None):
+    projects = data_api_client.find_direct_award_projects(user_id, latest_first=latest_first).get('projects', [])
 
     res = {
         "open_projects": [],

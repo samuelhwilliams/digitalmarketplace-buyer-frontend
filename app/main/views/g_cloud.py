@@ -308,7 +308,7 @@ def saved_search_overview(framework_framework):
     content_loader.load_messages(framework['slug'], ['descriptions', 'urls'])
     framework_short_description = content_loader.get_message(framework['slug'], 'descriptions', 'framework_short')
 
-    projects = get_direct_award_projects(current_user.id)
+    projects = get_direct_award_projects(current_user.id, latest_first=True)
 
     return render_template(
         'direct-award/index.html',
