@@ -80,6 +80,16 @@ var logErrorAndExit = function logErrorAndExit(err) {
 
 };
 
+gulp.task('set_environment_to_development', function (cb) {
+  environment = 'development';
+  cb();
+});
+
+gulp.task('set_environment_to_production', function (cb) {
+  environment = 'production';
+  cb();
+});
+
 gulp.task('clean', function (cb) {
   var fileTypes = [];
   var complete = function (fileType) {
@@ -119,13 +129,14 @@ gulp.task('sass', function () {
 gulp.task('js', function () {
   var stream = gulp.src(jsSourceFile)
     .pipe(filelog('Compressing JavaScript files'))
-    .pipe(include({'hardFail': true}))
+    .pipe(include())
     .pipe(sourcemaps.init())
     .pipe(uglify(
       uglifyOptions[environment]
     ))
     .pipe(sourcemaps.write('./maps'))
-    .pipe(gulp.dest(jsDistributionFolder));
+    .pipe(gulp.dest(jsDistributionFolder))
+    .on('error', function(e) { console.log(e); });
 
   stream.on('end', function () {
     console.log('💾 Compressed JavaScript saved as ' + jsDistributionFolder + '/' + jsDistributionFile);
@@ -247,6 +258,16 @@ gulp.task(
   )
 );
 
+gulp.task('build:development', gulp.parallel('set_environment_to_development', 'clean', function (done) {
+  gulp.series('compile');
+  done();
+}));
+
+gulp.task('build:production', gulp.parallel('set_environment_to_production', 'clean', function (done) {
+  gulp.series('compile');
+  done();
+}));
+
 gulp.task('test', function () {
   var manifest = require(repoRoot + 'spec/javascripts/manifest.js').manifest;
 
@@ -259,38 +280,28 @@ gulp.task('test', function () {
 
   return gulp.src(manifest.test)
     .pipe(jasmine({
-      'jasmine': '2.0',
+      'jasmine': '3.0',
       'integration': true,
       'abortOnFail': true,
       'vendor': manifest.support
     }));
 });
 
-gulp.task('watch', ['build:development'], function () {
-  var jsWatcher = gulp.watch([ assetsFolder + '/**/*.js' ], ['js']);
-  var cssWatcher = gulp.watch([ assetsFolder + '/**/*.scss' ], ['sass']);
-  var dmWatcher = gulp.watch([ npmRoot + '/digitalmarketplace-frameworks/**' ], ['copy:frameworks']);
+gulp.task('watch', gulp.series('build:development', function () {
+  var jsWatcher = gulp.watch([ assetsFolder + '/**/*.js' ], gulp.series('js'));
+  var cssWatcher = gulp.watch([ assetsFolder + '/**/*.scss' ], gulp.series('sass'));
+  var dmWatcher = gulp.watch([ npmRoot + '/digitalmarketplace-frameworks/**' ], gulp.series('copy:frameworks'));
   var notice = function (event) {
-    console.log('File ' + event.path + ' was ' + event.type + ' running tasks...');
+    console.log('File ' + event + ' was ' + event.type + ' running tasks...');
   };
 
   cssWatcher.on('change', notice);
   jsWatcher.on('change', notice);
-});
-
-gulp.task('set_environment_to_development', function (cb) {
-  environment = 'development';
-  cb();
-});
-
-gulp.task('set_environment_to_production', function (cb) {
-  environment = 'production';
-  cb();
-});
+}));
 
 gulp.task(
   'copy',
-  [
+  gulp.parallel(
     'copy:frameworks',
     'copy:template_assets:images',
     'copy:template_assets:stylesheets',
@@ -302,24 +313,16 @@ gulp.task(
     'copy:images',
     'copy:svg',
     'copy:govuk_template'
-  ]
+  )
 );
 
 gulp.task(
   'compile',
-  [
+  gulp.series(
     'copy'
-  ],
-  function() {
-    gulp.start('sass');
-    gulp.start('js');
+  ),
+  function(done) {
+    gulp.parallel('sass', 'js');
+    done();
   }
 );
-
-gulp.task('build:development', ['set_environment_to_development', 'clean'], function () {
-  gulp.start('compile');
-});
-
-gulp.task('build:production', ['set_environment_to_production', 'clean'], function () {
-  gulp.start('compile');
-});
