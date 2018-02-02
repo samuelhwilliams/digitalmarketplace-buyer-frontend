@@ -1,5 +1,7 @@
 # Digital Marketplace Buyer Frontend
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/samuelhwilliams/digitalmarketplace-buyer-frontend.svg)](https://greenkeeper.io/)
+
 [![Coverage Status](https://coveralls.io/repos/alphagov/digitalmarketplace-buyer-frontend/badge.svg?branch=master&service=github)](https://coveralls.io/github/alphagov/digitalmarketplace-buyer-frontend?branch=master)
 [![Requirements Status](https://requires.io/github/alphagov/digitalmarketplace-buyer-frontend/requirements.svg?branch=master)](https://requires.io/github/alphagov/digitalmarketplace-buyer-frontend/requirements/?branch=master)
 
